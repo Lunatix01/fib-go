@@ -3,6 +3,7 @@ package fib
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"github.com/google/uuid"
 	"io"
 	"log"
@@ -160,6 +161,18 @@ func (client *Client) CreatePayment(amount int, currency string, statusCallBackU
 
 	_, newErr := request(client.URL+PaymentCreationPath, headers, marshal, &createPaymentResponse, POST)
 	return createPaymentResponse, newErr
+}
+
+// CheckPayment method checks payment and its status and returns CheckPaymentResponse, PaymentError
+func (client *Client) CheckPayment(paymentID uuid.UUID) (CheckPaymentResponse, *PaymentError) {
+	var checkPaymentResponse CheckPaymentResponse
+
+	headers := client.buildHeaders()
+
+	URL := fmt.Sprintf(client.URL+PaymentCheckPath, paymentID)
+	_, err := request(URL, headers, nil, &checkPaymentResponse, GET)
+
+	return checkPaymentResponse, err
 }
 
 // request function used by other payment methods
