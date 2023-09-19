@@ -1,6 +1,13 @@
 package fib
 
-import "github.com/google/uuid"
+import (
+	"bytes"
+	"encoding/json"
+	"github.com/google/uuid"
+	"io"
+	"log"
+	"net/http"
+)
 
 // Request methods
 const (
@@ -133,5 +140,89 @@ func WithDescription(description string) PaymentFunc {
 func WithExpiresIn(expiresIn string) PaymentFunc {
 	return func(payment *Payment) {
 		payment.ExpiresIn = expiresIn
+	}
+}
+
+// request function used by other payment methods
+func request(URL string, headers map[string]string, body []byte, responseBody interface{}, method string) (interface{}, *PaymentError) {
+	req, err := http.NewRequest(method, URL, bytes.NewBuffer(body))
+	if err != nil {
+		log.Println("NewRequest:", err)
+		return nil, &PaymentError{
+			error:     err,
+			ErrorBody: nil,
+		}
+	}
+
+	for key, value := range headers {
+		req.Header.Set(key, value)
+	}
+
+	client := &http.Client{}
+	response, err := client.Do(req)
+	if err != nil {
+		log.Println("NewRequest:", err)
+		return nil, &PaymentError{
+			error:     err,
+			ErrorBody: nil,
+		}
+	}
+	defer response.Body.Close()
+
+	statusCode := response.StatusCode
+
+	readableBody, err := io.ReadAll(response.Body)
+	if err != nil {
+		log.Println("Error while reading body.")
+		return nil, &PaymentError{
+			error:     err,
+			ErrorBody: nil,
+		}
+	}
+
+	switch statusCode {
+	case OK:
+	case CREATED:
+	case BAD_CONTENT, NOT_FOUND:
+		var errBody ErrorBody
+		if err := json.Unmarshal(readableBody, &errBody); err != nil {
+			log.Println("Error unmarshalling ErrorBody.")
+			return nil, &PaymentError{
+				error:     err,
+				ErrorBody: nil,
+			}
+		}
+		return nil, &PaymentError{
+			error:     nil,
+			ErrorBody: &errBody,
+		}
+	case NO_CONTENT:
+		return true, nil
+	case UNAUTHORIZED:
+		return nil, &PaymentError{
+			error: nil,
+			ErrorBody: &ErrorBody{
+				TraceID: "",
+				Errors: []Error{
+					{
+						Title:  "Unauthorized",
+						Code:   "",
+						Detail: "",
+					},
+				},
+			},
+		}
+	default:
+		log.Printf("Unhandled status code: %d", statusCode)
+	}
+
+	unmarshalJSON(readableBody, &responseBody)
+	return nil, nil
+}
+
+func (client *Client) buildHeaders() map[string]string {
+	return map[string]string{
+		"Authorization": "Bearer " + client.Tokens.AccessToken,
+		"Content-Type":  "application/json",
 	}
 }
