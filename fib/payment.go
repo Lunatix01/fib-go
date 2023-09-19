@@ -190,7 +190,6 @@ func (client *Client) CancelPayment(paymentID uuid.UUID) (bool, *PaymentError) {
 	return reflect.ValueOf(isCanceled).Bool(), err
 }
 
-
 // RefundPayment method to refund a payment returns bool, PaymentError
 func (client *Client) RefundPayment(paymentID uuid.UUID) *PaymentError {
 	headers := client.buildHeaders()
