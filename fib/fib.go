@@ -51,6 +51,31 @@ type LoginError struct {
 	Description string `json:"error_description"`
 }
 
+func defaultConfigs(clientId string, clientSecret string, isTesting bool) Client {
+	URL := ProdURL
+	if isTesting {
+		URL = TestURL
+	}
+	return Client{
+		URL: URL,
+		Authentication: Authentication{
+			ClientId:     clientId,
+			ClientSecret: clientSecret,
+		},
+		Tokens:    Tokens{},
+		GrantType: GrantType,
+	}
+}
+
+// New create a new Client
+func New(clientId string, clientSecret string, isTesting bool) (*Client, *LoginError) {
+	configs := defaultConfigs(clientId, clientSecret, isTesting)
+
+	loginErr := authenticate(&configs)
+
+	return &configs, loginErr
+}
+
 // authenticate function to authenticate user and get back token
 func authenticate(configs *Client) *LoginError {
 	authenticationURL := configs.URL + AuthenticationPath
