@@ -139,6 +139,22 @@ func TestCheckPaymentNotFound(t *testing.T) {
 
 }
 
+func TestCancelPayment(t *testing.T) {
+	// given
+	client, _ := fib.New(clientID, clientSecret, true)
+	_, _ = client.CreatePayment(amount, currency, callbackURL)
+	fakeUUID := uuid.New()
+
+	// when
+	_, err := client.CancelPayment(fakeUUID)
+
+	// then
+	assert.NotEmpty(t, err.ErrorBody.TraceID)
+	assert.Equal(t, err.ErrorBody.Errors[0].Code, "PAYMENT_NOT_FOUND")
+	assert.Equal(t, err.ErrorBody.Errors[0].Title, "")
+	assert.Equal(t, err.ErrorBody.Errors[0].Detail, "")
+}
+
 func TestRefundNotSucceed(t *testing.T) {
 	// find a way to test refund ?
 }

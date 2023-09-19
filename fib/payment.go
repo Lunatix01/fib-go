@@ -8,6 +8,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"reflect"
 )
 
 // Request methods
@@ -174,6 +175,21 @@ func (client *Client) CheckPayment(paymentID uuid.UUID) (CheckPaymentResponse, *
 
 	return checkPaymentResponse, err
 }
+
+// CancelPayment method to cancel a payment returns bool, PaymentError
+func (client *Client) CancelPayment(paymentID uuid.UUID) (bool, *PaymentError) {
+	headers := client.buildHeaders()
+
+	URL := fmt.Sprintf(client.URL+PaymentCancelPath, paymentID)
+	isCanceled, err := request(URL, headers, nil, nil, POST)
+
+	if err != nil {
+		return false, err
+	}
+
+	return reflect.ValueOf(isCanceled).Bool(), err
+}
+
 
 // RefundPayment method to refund a payment returns bool, PaymentError
 func (client *Client) RefundPayment(paymentID uuid.UUID) *PaymentError {
