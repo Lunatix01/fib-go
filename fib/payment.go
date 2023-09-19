@@ -106,3 +106,32 @@ type CheckPaymentResponse struct {
 	DeclinedAt      string                 `json:"declinedAt,omitempty"`
 	PaidBy          PaidBy                 `json:"paidBy,omitempty"`
 }
+
+type PaymentFunc func(*Payment)
+
+// defaultPayment without optional parameters
+func defaultPayment(amount int, currency string, statusCallBackURL string) Payment {
+	return Payment{
+		MonetaryValue: MonetaryValue{
+			Amount:   amount,
+			Currency: currency,
+		},
+		StatusCallbackURL: statusCallBackURL,
+		Description:       "",
+		ExpiresIn:         "",
+	}
+}
+
+// WithDescription add description optional
+func WithDescription(description string) PaymentFunc {
+	return func(payment *Payment) {
+		payment.Description = description
+	}
+}
+
+// WithExpiresIn add expiresIn optional
+func WithExpiresIn(expiresIn string) PaymentFunc {
+	return func(payment *Payment) {
+		payment.ExpiresIn = expiresIn
+	}
+}
