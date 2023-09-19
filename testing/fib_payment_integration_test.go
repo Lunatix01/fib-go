@@ -138,3 +138,7 @@ func TestCheckPaymentNotFound(t *testing.T) {
 	assert.Equal(t, err.ErrorBody.Errors[0].Detail, "")
 
 }
+
+func TestRefundNotSucceed(t *testing.T) {
+	// find a way to test refund ?
+}

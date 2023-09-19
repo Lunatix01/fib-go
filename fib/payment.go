@@ -175,6 +175,16 @@ func (client *Client) CheckPayment(paymentID uuid.UUID) (CheckPaymentResponse, *
 	return checkPaymentResponse, err
 }
 
+// RefundPayment method to refund a payment returns bool, PaymentError
+func (client *Client) RefundPayment(paymentID uuid.UUID) *PaymentError {
+	headers := client.buildHeaders()
+
+	URL := fmt.Sprintf(client.URL+PaymentRefundPath, paymentID)
+	_, err := request(URL, headers, nil, nil, POST)
+
+	return err
+}
+
 // request function used by other payment methods
 func request(URL string, headers map[string]string, body []byte, responseBody interface{}, method string) (interface{}, *PaymentError) {
 	req, err := http.NewRequest(method, URL, bytes.NewBuffer(body))
