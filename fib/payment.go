@@ -143,6 +143,25 @@ func WithExpiresIn(expiresIn string) PaymentFunc {
 	}
 }
 
+// CreatePayment method creates a payment and returns CreatePaymentResponse, PaymentError
+func (client *Client) CreatePayment(amount int, currency string, statusCallBackURL string, opts ...PaymentFunc) (CreatePaymentResponse, *PaymentError) {
+	var createPaymentResponse CreatePaymentResponse
+	payment := defaultPayment(amount, currency, statusCallBackURL)
+	for _, opt := range opts {
+		opt(&payment)
+	}
+
+	marshal, err := json.Marshal(payment)
+	if err != nil {
+		log.Fatal("cant encode body")
+	}
+
+	headers := client.buildHeaders()
+
+	_, newErr := request(client.URL+PaymentCreationPath, headers, marshal, &createPaymentResponse, POST)
+	return createPaymentResponse, newErr
+}
+
 // request function used by other payment methods
 func request(URL string, headers map[string]string, body []byte, responseBody interface{}, method string) (interface{}, *PaymentError) {
 	req, err := http.NewRequest(method, URL, bytes.NewBuffer(body))
