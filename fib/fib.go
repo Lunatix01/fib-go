@@ -1,6 +1,14 @@
 package fib
 
-import "time"
+import (
+	"encoding/json"
+	"io"
+	"log"
+	"net/http"
+	"net/url"
+	"strings"
+	"time"
+)
 
 // URLs
 const (
@@ -41,4 +49,55 @@ type Client struct {
 type LoginError struct {
 	Title       string `json:"error"`
 	Description string `json:"error_description"`
+}
+
+// authenticate function to authenticate user and get back token
+func authenticate(configs *Client) *LoginError {
+	authenticationURL := configs.URL + AuthenticationPath
+	authenticationContentType := "application/x-www-form-urlencoded"
+	formData := url.Values{
+		"grant_type":    {configs.GrantType},
+		"client_id":     {configs.Authentication.ClientId},
+		"client_secret": {configs.Authentication.ClientSecret},
+	}
+	requestBody := strings.NewReader(formData.Encode())
+
+	response, err := http.Post(authenticationURL, authenticationContentType, requestBody)
+	if err != nil {
+		log.Fatal("ERROR sending request request")
+	}
+
+	readableBody, err := io.ReadAll(response.Body)
+	if err != nil {
+		log.Fatal("Error while reading body.")
+	}
+
+	if response.StatusCode >= BAD_CONTENT && response.StatusCode < INTERNAL_SERVER_ERROR {
+		var loginError LoginError
+		unmarshalJSON(readableBody, &loginError)
+		return &loginError
+	}
+
+	unmarshalJSON(readableBody, &configs.Tokens)
+
+	configs.Tokens.ExpiresAt = time.Now().Add(configs.Tokens.ExpiresAfter * time.Second)
+
+	return nil
+}
+
+func (tokens *Tokens) RefreshTokenIfNeeded(configs *Client) {
+	if tokens.IsTokenExpired() {
+		authenticate(configs)
+	}
+}
+
+func (tokens *Tokens) IsTokenExpired() bool {
+	return time.Now().After(tokens.ExpiresAt)
+}
+
+func unmarshalJSON(data []byte, v interface{}) {
+	err := json.Unmarshal(data, v)
+	if err != nil {
+		log.Fatal("Error while parsing response body:", err)
+	}
 }
