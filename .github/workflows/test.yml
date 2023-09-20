@@ -1,0 +1,23 @@
+name: Run Go Tests
+on:
+  push:
+    branches:
+      - 'master'
+      - 'feature/**'
+      - 'bugfix/**'
+      - 'improvement/**'
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      CLIENT_ID: ${{ secrets.CLIENT_ID }}
+      CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.21.0'
+      - name: Run Tests
+        run: go test  ./testing -v -count 1
