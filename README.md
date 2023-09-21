@@ -39,5 +39,20 @@ For comprehensive information on how to handle errors, please refer to the Error
 ## Contributing
 We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for more details.
 
+### Contributing to Documentation
+
+The documentation is available in this [Repository](https://github.com/Lunatix01/fib-go-doc)
+
+If you find an error, or omission, or have an idea for improving the documentation, we would love to hear from you! Feel free to open an issue or create a pull request.
+
+1. **Open an Issue**: If you find a problem or have a suggestion for the documentation, start by opening an issue to discuss it.
+
+2. **Create a Pull Request**: Once the issue is acknowledged, you can proceed to fork the repository, clone it locally, and make your changes. Please make sure your pull request is linked to the issue.
+
+3. **Branch Naming Convention**: Use the following naming conventions for your branches:
+    - For documentation improvements: `improvement/doc-BRANCH-NAME`
+
+4. **Testing**: Make sure to test your changes locally before submitting the pull request.
+
 ## License
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
