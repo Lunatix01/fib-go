@@ -34,7 +34,7 @@ if paymentErr != nil {
 ```
 
 ## Error Handling
-For comprehensive information on how to handle errors, please refer to the Error Handling section on our [Website](https://fibgo.wiki/error-handling).
+For comprehensive information on how to handle errors, please refer to the Error Handling section on our [Website](https://fibgo.wiki/payment/error-handling).
 
 ## Contributing
 We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for more details.
