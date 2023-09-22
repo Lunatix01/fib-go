@@ -1,7 +1,7 @@
 package testing
 
 import (
-	"fib-go/fib"
+	"github.com/lunatix01/fib-go/fib"
 	"github.com/go-chrono/chrono"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
