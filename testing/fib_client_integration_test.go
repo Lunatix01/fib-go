@@ -1,7 +1,7 @@
 package testing
 
 import (
-	"github.com/lunatix01/fib-go/fib"
+	"github.com/Lunatix01/fib-go/fib"
 	"github.com/stretchr/testify/assert"
 	"os"
 	"testing"
