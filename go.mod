@@ -1,4 +1,4 @@
-module github.com/lunatix01/fib-go
+module github.com/Lunatix01/fib-go
 
 go 1.21
 
