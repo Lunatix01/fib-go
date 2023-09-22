@@ -180,13 +180,17 @@ func (client *Client) CancelPayment(paymentID uuid.UUID) (bool, *PaymentError) {
 }
 
 // RefundPayment method to refund a payment returns bool, PaymentError
-func (client *Client) RefundPayment(paymentID uuid.UUID) *PaymentError {
+func (client *Client) RefundPayment(paymentID uuid.UUID) (bool, *PaymentError) {
 	headers := client.buildHeaders()
 
 	URL := fmt.Sprintf(client.URL+PaymentRefundPath, paymentID)
-	_, err := request(URL, headers, nil, nil, POST)
+	isRefundedAlready, err := request(URL, headers, nil, nil, POST)
 
-	return err
+	if err != nil {
+		return false, err
+	}
+
+	return reflect.ValueOf(isRefundedAlready).Bool(), err
 }
 
 // request function used by other payment methods
@@ -229,6 +233,8 @@ func request(URL string, headers map[string]string, body []byte, responseBody in
 	switch statusCode {
 	case OK:
 	case CREATED:
+	case ACCEPTED:
+		return true, nil
 	case BAD_CONTENT, NOT_FOUND:
 		var errBody ErrorBody
 		if err := json.Unmarshal(readableBody, &errBody); err != nil {
