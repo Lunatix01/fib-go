@@ -2,7 +2,7 @@
 [![Go Reference](https://pkg.go.dev/badge/github.com/lunatix01/fib-go)](https://pkg.go.dev/github.com/lunatix01/fib-go)
 [![Run Go Tests](https://github.com/Lunatix01/fib-go/actions/workflows/test.yml/badge.svg?branch=master)](https://github.com/Lunatix01/fib-go/actions/workflows/test.yml)
 
-Welcome to FIB Go, the official Go SDK for integrating with the First Iraqi Bank's Online Payments Service. This SDK allows you to easily accept payments, check payment statuses, handle refunds, and much more, all within your Go applications.
+Welcome to FIB Go, the Go SDK for integrating with the First Iraqi Bank's Online Payments Service. This SDK allows you to easily accept payments, check payment statuses, handle refunds, and much more, all within your Go applications.
 
 ## Features
 1. Easy Payment Creation
